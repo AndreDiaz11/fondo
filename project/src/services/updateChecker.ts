@@ -22,7 +22,12 @@ export async function checkForUpdate(currentVersion: string): Promise<UpdateInfo
   const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases/latest`, {
     headers: { Accept: 'application/vnd.github+json' },
   });
-  if (!response.ok) return null;
+  // TEMPORAL: antes esto devolvia null en silencio (return null), lo que
+  // hacia indistinguible "sin actualizacion" de "fallo la conexion/API".
+  // Se lanza el error para que App.tsx lo muestre en la alerta de debug.
+  if (!response.ok) {
+    throw new Error(`GitHub respondio ${response.status}: ${await response.text()}`);
+  }
 
   const data = await response.json();
   const tag = String(data.tag_name ?? '').replace('v', '');
