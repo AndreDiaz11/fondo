@@ -1,0 +1,4 @@
+secretos/
+project-capacitor-old/
+*.apk
+*.keystore
